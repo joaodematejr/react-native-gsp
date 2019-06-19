@@ -6,18 +6,40 @@
  * @flow
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import GPSState from 'react-native-gps-state'
+export default class App extends Component {
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+  componentWillMount() {
+    GPSState.addListener((status) => {
+      switch (status) {
+        case GPSState.NOT_DETERMINED:
+          alert('Please, allow the location, for us to do amazing things for you!')
+          break;
 
-type Props = {};
-export default class App extends Component<Props> {
+        case GPSState.RESTRICTED:
+          GPSState.openLocationSettings()
+          break;
+
+        case GPSState.DENIED:
+          alert('It`s a shame that you do not allowed us to use location :(')
+          break;
+
+        case GPSState.AUTHORIZED_ALWAYS:
+          //TODO do something amazing with you app
+          break;
+
+        case GPSState.AUTHORIZED_WHENINUSE:
+          //TODO do something amazing with you app
+          break;
+      }
+    })
+    GPSState.requestAuthorization(GPSState.AUTHORIZED_WHENINUSE)
+  }
+
+
+
   render() {
     return (
       <View style={styles.container}>
